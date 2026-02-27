@@ -64,7 +64,7 @@ activities = {
         "participants": ["lucas@mergington.edu", "isabella@mergington.edu"]
     },
     "Debate Team": {
-        "description": "Compete in debates and develop critical thinking skills",
+        "description": "Compete in debates  and develop critical thinking skills",
         "schedule": "Mondays and Wednesdays, 3:30 PM - 5:00 PM",
         "max_participants": 18,
         "participants": ["ethan@mergington.edu"]
@@ -105,3 +105,18 @@ def signup_for_activity(activity_name: str, email: str):
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/signup")
+def unregister_from_activity(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    # Validate activity exists
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    # Validate student is signed up
+    if email not in activities[activity_name]["participants"]:
+        raise HTTPException(status_code=404, detail="Student not signed up for this activity")
+
+    activities[activity_name]["participants"].remove(email)
+    return {"message": f"Unregistered {email} from {activity_name}"}
